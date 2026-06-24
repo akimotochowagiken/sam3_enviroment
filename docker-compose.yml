@@ -1,12 +1,11 @@
 services:
   sam3-dev:
-    # 方法A: ホストで事前ビルドしたイメージを使う（後述READMEの手順1）
+    # Portainerの「Repository」デプロイでDockerfileからビルドする構成
     image: sam3-dev:latest
-    # 方法B: Portainerの「Repository」デプロイでDockerfileからビルドする場合は
-    # 下のbuildを有効化（image行はそのまま残してOK）
-    # build:
-    #   context: .
-    #   dockerfile: Dockerfile
+    build:
+      context: .
+      dockerfile: Dockerfile
+    pull_policy: build          # pullせず必ずローカルでビルドする（重要）
 
     container_name: sam3-dev
     restart: unless-stopped
@@ -22,11 +21,9 @@ services:
 
     environment:
       # Hugging Face のアクセストークン（ゲート付きチェックポイントDL用）
-      # Portainer の Stack 画面下「Environment variables」で HF_TOKEN を設定する
       - HF_TOKEN=${HF_TOKEN}
       - HUGGING_FACE_HUB_TOKEN=${HF_TOKEN}
       # VS Code Remote-SSH 用の公開鍵（id_ed25519.pub の中身を貼る）
-      # Portainer の Environment variables で SSH_PUBKEY に設定する
       - SSH_PUBKEY=${SSH_PUBKEY}
       - ENABLE_JUPYTER=1          # JupyterLab不要なら 0
       - NVIDIA_VISIBLE_DEVICES=all
@@ -38,11 +35,8 @@ services:
 
     volumes:
       - sam3_workspace:/workspace        # コード・データ・モデルを永続化
-    # ホストの既存データを使いたい場合は bind mount に置き換え:
-    #   - /srv/sam3/workspace:/workspace
 
     shm_size: "8gb"             # DataLoader等のための共有メモリ
-    # 検証で行き詰まったら exec で中に入る:  docker exec -it sam3-dev bash
 
 volumes:
   sam3_workspace:

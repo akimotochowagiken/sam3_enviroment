@@ -1,0 +1,13 @@
+# データ・モデル・キャッシュ（リポジトリには含めない）
+checkpoints/
+*.pt
+*.pth
+.cache/
+__pycache__/
+*.pyc
+
+# ローカルの秘密情報
+.env
+*.pem
+id_*
+*.key
